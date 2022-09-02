@@ -48,7 +48,7 @@ func IsValidate(student models.Student) error {
 		return errors.New("invalid first name")
 	case checkLastName(student.LastName):
 		return errors.New("invalid last name")
-	case checkGender(student.Gender):
+	case !checkGender(student.Gender):
 		return errors.New("invalid gender")
 	case checkDob(student.Dob):
 		return errors.New("invalid dob")
@@ -72,3 +72,9 @@ func IsValidate(student models.Student) error {
 		return nil
 	}
 }
+
+func checkGender(gender string) bool {
+	return gender == "M" || gender == "F" || gender == "O"
+}
+
+// remaining some validation check
