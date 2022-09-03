@@ -85,6 +85,4 @@ func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	return
 }

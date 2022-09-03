@@ -28,6 +28,6 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/student", handlerStudent.Post).Methods(http.MethodPost)
-	fmt.Println("http server started and listening on port :8000")
+	fmt.Println("http server started and listening on port :9090")
 	log.Fatal(http.ListenAndServe(":9090", r))
 }
