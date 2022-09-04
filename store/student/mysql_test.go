@@ -44,7 +44,7 @@ func TestGet(t *testing.T) {
 
 		s := New(db)
 
-		res, err := s.Get(context.Background())
+		res, err := s.Get(context.TODO())
 
 		if !reflect.DeepEqual(tc.expOutput, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expOutput, res)
@@ -101,7 +101,7 @@ func TestPost(t *testing.T) {
 
 		s := New(db)
 
-		res, err := s.Post(context.Background(), tc.reqData)
+		res, err := s.Post(context.TODO(), tc.reqData)
 
 		if !reflect.DeepEqual(tc.expRes, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)

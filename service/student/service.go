@@ -117,14 +117,6 @@ func checkLastName(lastName string) bool {
 	return true
 }
 
-func isLeap(y int) bool {
-	if (y%4 == 0) && (y%100 != 0) && (y%400 == 0) {
-		return true
-	}
-
-	return false
-}
-
 func checkDob(dob string) bool {
 	mm, err := strconv.Atoi(strings.Split(dob, "-")[0])
 	if err != nil {
@@ -149,14 +141,8 @@ func checkDob(dob string) bool {
 		return false
 	}
 
-	if mm == 2 {
-		if isLeap(yyyy) {
-			if dd <= 29 {
-				return true
-			}
-
-			return false
-		}
+	if yyyy < 1000 || yyyy > 9999 {
+		return false
 	}
 
 	if mm == 4 || mm == 6 || mm == 9 || mm == 11 {
@@ -229,12 +215,6 @@ func checkContactNumber(contactNumber int) bool {
 
 	if len(contactNum) != 10 {
 		return false
-	}
-
-	for _, value := range contactNum {
-		if !(value >= 48 && value <= 57) {
-			return false
-		}
 	}
 
 	return true
