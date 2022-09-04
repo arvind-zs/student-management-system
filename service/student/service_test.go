@@ -157,7 +157,7 @@ func TestGet_Err(t *testing.T) {
 	}
 }
 
-func TestPost_BodyCheckErr(t *testing.T) {
+func TestPost_BodyCheckErr1(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -228,6 +228,35 @@ func TestPost_BodyCheckErr(t *testing.T) {
 			Nationality:   "Indian",
 			ContactNumber: 7348761063,
 		}, expErr: errors.New("invalid dob")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		res, err := mock.Post(ctx, tc.reqData)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestPost_BodyCheckErr2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc    string
+		reqData models.Student
+		expRes  models.Student
+		expErr  error
+	}{
 		{desc: "failure:invalid gender", reqData: models.Student{
 			FirstName:     "arvind",
 			Gender:        "K",
