@@ -15,3 +15,11 @@ type Student struct {
 	MotherOccupation string `json:"mother_occupation,omitempty"`
 	FamilyIncome     int    `json:"family_income,omitempty"`
 }
+
+type Gender string
+
+const (
+	Male   Gender = "M"
+	Female Gender = "F"
+	Other  Gender = "O"
+)
