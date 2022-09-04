@@ -18,7 +18,7 @@ func New(s store.Student) service {
 	return service{student: s}
 }
 
-func (s service) Post(ctx context.Context, student models.Student) (models.Student, error) {
+func (s service) Post(ctx context.Context, student *models.Student) (models.Student, error) {
 	if err := isValidate(student); err != nil {
 		return models.Student{}, err
 	}
@@ -29,7 +29,7 @@ func (s service) Post(ctx context.Context, student models.Student) (models.Stude
 	}
 
 	for i := range students {
-		if isDuplicate(students[i], student) {
+		if isDuplicate(&students[i], student) {
 			return models.Student{}, errors.New("student already exists")
 		}
 	}
@@ -37,14 +37,14 @@ func (s service) Post(ctx context.Context, student models.Student) (models.Stude
 	return s.student.Post(ctx, student)
 }
 
-func isDuplicate(s1, s2 models.Student) bool {
+func isDuplicate(s1, s2 *models.Student) bool {
 	return s1.FirstName == s2.FirstName && s1.LastName == s2.LastName && s1.Gender == s2.Gender && s1.Dob ==
 		s2.Dob && s1.MotherTongue == s2.MotherTongue && s1.Nationality == s2.Nationality && s1.FatherName ==
 		s2.FatherName && s1.MotherName == s2.MotherName && s1.ContactNumber == s2.ContactNumber && s1.FatherOccupation ==
 		s2.FatherOccupation && s1.MotherOccupation == s2.MotherOccupation && s1.FamilyIncome == s2.FamilyIncome
 }
 
-func isValidate(student models.Student) error {
+func isValidate(student *models.Student) error {
 	switch {
 	case !checkFirstName(student.FirstName):
 		return errors.New("invalid first name")

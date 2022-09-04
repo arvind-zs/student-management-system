@@ -71,9 +71,9 @@ func TestPost(t *testing.T) {
 	for i, tc := range testcases {
 		ctx := context.Background()
 		mockStore.EXPECT().Get(ctx).Return(tc.expGetRes, tc.expGetErr)
-		mockStore.EXPECT().Post(ctx, tc.reqData).Return(tc.expRes, tc.expErr)
+		mockStore.EXPECT().Post(ctx, &tc.reqData).Return(tc.expRes, tc.expErr)
 
-		res, err := mock.Post(ctx, tc.reqData)
+		res, err := mock.Post(ctx, &tc.reqData)
 
 		if !reflect.DeepEqual(tc.expRes, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
@@ -145,7 +145,7 @@ func TestGet_Err(t *testing.T) {
 		ctx := context.Background()
 		mockStore.EXPECT().Get(ctx).Return(tc.expGetRes, tc.expGetErr)
 
-		res, err := mock.Post(ctx, tc.reqData)
+		res, err := mock.Post(ctx, &tc.reqData)
 
 		if !reflect.DeepEqual(tc.expRes, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
@@ -232,7 +232,7 @@ func TestPost_BodyCheckErr1(t *testing.T) {
 
 	for i, tc := range testcases {
 		ctx := context.Background()
-		res, err := mock.Post(ctx, tc.reqData)
+		res, err := mock.Post(ctx, &tc.reqData)
 
 		if !reflect.DeepEqual(tc.expRes, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
@@ -318,7 +318,7 @@ func TestPost_BodyCheckErr2(t *testing.T) {
 
 	for i, tc := range testcases {
 		ctx := context.Background()
-		res, err := mock.Post(ctx, tc.reqData)
+		res, err := mock.Post(ctx, &tc.reqData)
 
 		if !reflect.DeepEqual(tc.expRes, res) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)

@@ -43,7 +43,7 @@ func (s store) Get(ctx context.Context) ([]models.Student, error) {
 	return students, nil
 }
 
-func (s store) Post(ctx context.Context, student models.Student) (models.Student, error) {
+func (s store) Post(ctx context.Context, student *models.Student) (models.Student, error) {
 	query := "insert into student (first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
 		"father_occupation,mother_occupation,family_income) values (?,?,?,?,?,?,?,?,?,?,?,?);"
 
@@ -62,5 +62,5 @@ func (s store) Post(ctx context.Context, student models.Student) (models.Student
 
 	student.ID = int(ID)
 
-	return student, nil
+	return *student, nil
 }

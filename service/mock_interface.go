@@ -36,7 +36,7 @@ func (m *MockStudent) EXPECT() *MockStudentMockRecorder {
 }
 
 // Post mocks base method.
-func (m *MockStudent) Post(ctx context.Context, student models.Student) (models.Student, error) {
+func (m *MockStudent) Post(ctx context.Context, student *models.Student) (models.Student, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Post", ctx, student)
 	ret0, _ := ret[0].(models.Student)

@@ -49,7 +49,7 @@ func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	student, err = h.student.Post(r.Context(), student)
+	student, err = h.student.Post(r.Context(), &student)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 

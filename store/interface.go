@@ -8,5 +8,5 @@ import (
 
 type Student interface {
 	Get(ctx context.Context) ([]models.Student, error)
-	Post(ctx context.Context, student models.Student) (models.Student, error)
+	Post(ctx context.Context, student *models.Student) (models.Student, error)
 }

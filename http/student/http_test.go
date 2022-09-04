@@ -55,7 +55,7 @@ func TestPost(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/student", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
-		mockService.EXPECT().Post(req.Context(), tc.reqBody).Return(tc.expRes, tc.expErr)
+		mockService.EXPECT().Post(req.Context(), &tc.reqBody).Return(tc.expRes, tc.expErr)
 		mock.Post(w, req)
 
 		if w.Code != tc.expStatus {

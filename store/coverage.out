@@ -7,8 +7,8 @@ student-management-system/store/student/mysql.go:24.16,26.3 1 1
 student-management-system/store/student/mysql.go:30.18,36.17 3 1
 student-management-system/store/student/mysql.go:40.3,40.39 1 1
 student-management-system/store/student/mysql.go:36.17,38.4 1 0
-student-management-system/store/student/mysql.go:46.90,54.16 3 1
+student-management-system/store/student/mysql.go:46.91,54.16 3 1
 student-management-system/store/student/mysql.go:58.2,59.16 2 1
-student-management-system/store/student/mysql.go:63.2,65.21 2 1
+student-management-system/store/student/mysql.go:63.2,65.22 2 1
 student-management-system/store/student/mysql.go:54.16,56.3 1 1
 student-management-system/store/student/mysql.go:59.16,61.3 1 0
