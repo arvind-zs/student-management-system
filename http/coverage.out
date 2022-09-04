@@ -1,0 +1,20 @@
+mode: set
+student-management-system/http/student/http.go:17.37,19.2 1 1
+student-management-system/http/student/http.go:21.63,23.16 2 1
+student-management-system/http/student/http.go:36.2,39.16 3 1
+student-management-system/http/student/http.go:52.2,53.16 2 1
+student-management-system/http/student/http.go:66.2,67.16 2 1
+student-management-system/http/student/http.go:80.2,83.16 3 1
+student-management-system/http/student/http.go:23.16,27.17 3 0
+student-management-system/http/student/http.go:33.3,33.9 1 0
+student-management-system/http/student/http.go:27.17,31.4 2 0
+student-management-system/http/student/http.go:39.16,43.17 3 1
+student-management-system/http/student/http.go:49.3,49.9 1 1
+student-management-system/http/student/http.go:43.17,47.4 2 0
+student-management-system/http/student/http.go:53.16,57.17 3 1
+student-management-system/http/student/http.go:63.3,63.9 1 1
+student-management-system/http/student/http.go:57.17,61.4 2 0
+student-management-system/http/student/http.go:67.16,71.17 3 0
+student-management-system/http/student/http.go:77.3,77.9 1 0
+student-management-system/http/student/http.go:71.17,75.4 2 0
+student-management-system/http/student/http.go:83.16,87.3 2 0
