@@ -112,3 +112,189 @@ func TestPost(t *testing.T) {
 		}
 	}
 }
+
+func TestGetByFirstAndLastName(t *testing.T) {
+	testcases := []struct {
+		desc      string
+		firstName string
+		lastName  string
+		expOutput []models.Student
+		expRows   *sqlmock.Rows
+		expErr    error
+	}{
+		{desc: "success:get all student with valid first and lastName ", firstName: "arvind", lastName: "yadav", expOutput: []models.Student{{ID: 1,
+			FirstName: "arvind", LastName: "yadav", Nationality: "Indian", ContactNumber: 7348761063}},
+			expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+				"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+				"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow(1, "arvind",
+				"yadav", "", "", "", "Indian", "", "", 7348761063, "", "", 0), expErr: nil},
+		{desc: "failure:error scanning", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow("abc", "arvind",
+			"", "", "", "", "Indian", "", "", "7348761063", "", "", 0), expErr: errors.New("scanning error")},
+		{desc: "failure:error select all", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}), expErr: errors.New("error")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mock.ExpectQuery("select * from student where first_name = ? and "+
+			"last_name = ?;").WithArgs(tc.firstName, tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+
+		s := New(db)
+
+		res, err := s.GetByFirstAndLastName(context.TODO(), tc.firstName, tc.lastName)
+
+		if !reflect.DeepEqual(tc.expOutput, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expOutput, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGetByFirstName(t *testing.T) {
+	testcases := []struct {
+		desc      string
+		firstName string
+		expOutput []models.Student
+		expRows   *sqlmock.Rows
+		expErr    error
+	}{
+		{desc: "success:get all student with valid firstName ", firstName: "arvind", expOutput: []models.Student{{ID: 1,
+			FirstName: "arvind", Nationality: "Indian", ContactNumber: 7348761063}},
+			expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+				"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+				"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow(1, "arvind",
+				"", "", "", "", "Indian", "", "", 7348761063, "", "", 0), expErr: nil},
+		{desc: "failure:error scanning", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow("abc", "arvind",
+			"", "", "", "", "Indian", "", "", "7348761063", "", "", 0), expErr: errors.New("scanning error")},
+		{desc: "failure:error select all", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}), expErr: errors.New("error")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mock.ExpectQuery("select * from student where first_name = ?;").WithArgs(tc.firstName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+
+		s := New(db)
+
+		res, err := s.GetByFirstName(context.TODO(), tc.firstName)
+
+		if !reflect.DeepEqual(tc.expOutput, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expOutput, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGetByLastName(t *testing.T) {
+	testcases := []struct {
+		desc      string
+		lastName  string
+		expOutput []models.Student
+		expRows   *sqlmock.Rows
+		expErr    error
+	}{
+		{desc: "success:get all student with valid firstName ", lastName: "yadav", expOutput: []models.Student{{ID: 1,
+			FirstName: "arvind", LastName: "yadav", Nationality: "Indian", ContactNumber: 7348761063}},
+			expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+				"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+				"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow(1, "arvind",
+				"yadav", "", "", "", "Indian", "", "", 7348761063, "", "", 0), expErr: nil},
+		{desc: "failure:error scanning", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow("abc", "arvind",
+			"", "", "", "", "Indian", "", "", "7348761063", "", "", 0), expErr: errors.New("scanning error")},
+		{desc: "failure:error select all", expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}), expErr: errors.New("error")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mock.ExpectQuery("select * from student where last_name = ?;").WithArgs(tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+
+		s := New(db)
+
+		res, err := s.GetByLastName(context.TODO(), tc.lastName)
+
+		if !reflect.DeepEqual(tc.expOutput, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expOutput, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGetByID(t *testing.T) {
+	testcases := []struct {
+		desc    string
+		id      int
+		expData models.Student
+		expRows *sqlmock.Rows
+		expErr  error
+	}{
+		{desc: "success:valid id", id: 1, expData: models.Student{
+			ID:            1,
+			FirstName:     "arvind",
+			LastName:      "yadav",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+			"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+			"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow(1, "arvind",
+			"yadav", "", "", "", "Indian", "", "", 7348761063, "", "", 0), expErr: nil},
+		{desc: "failure:scanning row error", id: 1,
+			expRows: sqlmock.NewRows([]string{"id", "first_name", "last_name",
+				"gender", "dob", "mother_tongue", "nationality", "father_name", "mother_name",
+				"contact_number", "father_occupation", "mother_occupation", "family_income"}).AddRow("abc", "arvind",
+				"yadav", "", "", "", "Indian", "", "", 7348761063, "", "", 0), expErr: errors.New("scanning error")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		ctx := context.TODO()
+
+		s := New(db)
+
+		mock.ExpectQuery("select * from student where id = ?;").WithArgs(tc.id).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+
+		result, err := s.GetByID(ctx, tc.id)
+
+		if !reflect.DeepEqual(result, tc.expData) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expData, result)
+		}
+
+		if !reflect.DeepEqual(err, tc.expErr) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
