@@ -329,3 +329,189 @@ func TestPost_BodyCheckErr2(t *testing.T) {
 		}
 	}
 }
+
+func TestGetByID(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc   string
+		id     int
+		expRes models.Student
+		expErr error
+	}{
+		{desc: "success:fetch student details with valid id", id: 1, expRes: models.Student{
+			ID:            1,
+			FirstName:     "arvind",
+			LastName:      "yadav",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}},
+
+		{desc: "failure: invalid id not present in result set", id: 1111, expErr: errors.New("no rows in db result set")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByID(ctx, tc.id).Return(tc.expRes, tc.expErr)
+
+		res, err := mock.GetByID(ctx, tc.id)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGet_FirstAndLastName(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		firstName string
+		lastName  string
+		expRes    []models.Student
+		expErr    error
+	}{
+		{desc: "success:valid Query params firstName and lastName", firstName: "arvind", lastName: "yadav",
+			expRes: []models.Student{
+				{ID: 1, FirstName: "arvind", LastName: "yadav", Nationality: "Indian", ContactNumber: 7348761063},
+			}},
+		{desc: "failure:invalid Query params firstName and lastName", firstName: "123a", lastName: "345a",
+			expErr: errors.New("no rows present in database with this query params")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByFirstAndLastName(ctx, tc.firstName, tc.lastName).Return(tc.expRes, tc.expErr)
+
+		res, err := mock.Get(ctx, tc.firstName, tc.lastName)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGet_FirstName(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		firstName string
+		lastName  string
+		expRes    []models.Student
+		expErr    error
+	}{
+		{desc: "success:valid Query params firstName ", firstName: "arvind",
+			expRes: []models.Student{
+				{ID: 1, FirstName: "arvind", Nationality: "Indian", ContactNumber: 7348761063},
+			}},
+		{desc: "failure:invalid Query param firstName ", firstName: "123a",
+			expErr: errors.New("no rows present in database with this query param")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByFirstName(ctx, tc.firstName).Return(tc.expRes, tc.expErr)
+
+		res, err := mock.Get(ctx, tc.firstName, tc.lastName)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGet_LastName(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		firstName string
+		lastName  string
+		expRes    []models.Student
+		expErr    error
+	}{
+		{desc: "success:valid Query param  lastName", lastName: "yadav",
+			expRes: []models.Student{
+				{ID: 1, FirstName: "arvind", LastName: "yadav", Nationality: "Indian", ContactNumber: 7348761063},
+			}},
+		{desc: "failure:invalid Query param lastName ", lastName: "123a",
+			expErr: errors.New("no rows present in database with this query param")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByLastName(ctx, tc.lastName).Return(tc.expRes, tc.expErr)
+
+		res, err := mock.Get(ctx, tc.firstName, tc.lastName)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestGet_MissingQueryParams(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		firstName string
+		lastName  string
+		expRes    []models.Student
+		expErr    error
+	}{
+		{desc: "failure:missing Query param firstName and lastName ",
+			expErr: errors.New("invalid query params")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		res, err := mock.Get(ctx, tc.firstName, tc.lastName)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
