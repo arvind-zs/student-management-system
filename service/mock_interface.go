@@ -35,6 +35,36 @@ func (m *MockStudent) EXPECT() *MockStudentMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockStudent) Get(ctx context.Context, firstName, lastName string) ([]models.Student, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, firstName, lastName)
+	ret0, _ := ret[0].([]models.Student)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockStudentMockRecorder) Get(ctx, firstName, lastName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockStudent)(nil).Get), ctx, firstName, lastName)
+}
+
+// GetByID mocks base method.
+func (m *MockStudent) GetByID(ctx context.Context, id int) (models.Student, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret0, _ := ret[0].(models.Student)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockStudentMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStudent)(nil).GetByID), ctx, id)
+}
+
 // Post mocks base method.
 func (m *MockStudent) Post(ctx context.Context, student *models.Student) (models.Student, error) {
 	m.ctrl.T.Helper()
