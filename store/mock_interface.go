@@ -35,6 +35,20 @@ func (m *MockStudent) EXPECT() *MockStudentMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockStudent) Delete(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockStudentMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockStudent)(nil).Delete), ctx, id)
+}
+
 // Get mocks base method.
 func (m *MockStudent) Get(ctx context.Context) ([]models.Student, error) {
 	m.ctrl.T.Helper()

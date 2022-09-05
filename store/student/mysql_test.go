@@ -92,7 +92,7 @@ func TestPost(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		query := "insert into " + string(models.TableName) + "(first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
+		query := "insert into " + string(models.TableName) + " (first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
 			"father_occupation,mother_occupation,family_income) values (?,?,?,?,?,?,?,?,?,?,?,?);"
 		mock.ExpectExec(query).WithArgs(tc.reqData.FirstName, tc.reqData.LastName, tc.reqData.Gender, tc.reqData.Dob,
 			tc.reqData.MotherTongue, tc.reqData.Nationality, tc.reqData.FatherName, tc.reqData.MotherName, tc.reqData.ContactNumber,
@@ -143,7 +143,7 @@ func TestGetByFirstAndLastName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from"+string(models.TableName)+"where first_name = ? and "+
+		mock.ExpectQuery("select * from "+string(models.TableName)+" where first_name = ? and "+
 			"last_name = ?;").WithArgs(tc.firstName, tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
@@ -189,7 +189,7 @@ func TestGetByFirstName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from" + string(models.TableName) + "where " +
+		mock.ExpectQuery("select * from " + string(models.TableName) + " where " +
 			"first_name = ?;").WithArgs(tc.firstName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
@@ -235,7 +235,7 @@ func TestGetByLastName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from " + string(models.TableName) + "where " +
+		mock.ExpectQuery("select * from " + string(models.TableName) + " where " +
 			"last_name = ?;").WithArgs(tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
@@ -287,13 +287,44 @@ func TestGetByID(t *testing.T) {
 
 		s := New(db)
 
-		mock.ExpectQuery("select * from " + string(models.TableName) + "where id = ?;").WithArgs(tc.id).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+		mock.ExpectQuery("select * from " + string(models.TableName) + " where id = ?;").WithArgs(tc.id).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		result, err := s.GetByID(ctx, tc.id)
 
 		if !reflect.DeepEqual(result, tc.expData) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expData, result)
 		}
+
+		if !reflect.DeepEqual(err, tc.expErr) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestDelete(t *testing.T) {
+	testcases := []struct {
+		desc             string
+		id               int
+		noOfRowsAffected int64
+		expErr           error
+	}{
+		{desc: "success:deleted successfully", id: 1, noOfRowsAffected: 1},
+		{desc: "failure:id is not present in db result set", id: 1111, expErr: errors.New("id not found")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		ctx := context.TODO()
+		s := New(db)
+
+		mock.ExpectExec("delete from " + string(models.TableName) + " where " +
+			"id = ?;").WithArgs(tc.id).WillReturnResult(sqlmock.NewResult(0, tc.noOfRowsAffected)).WillReturnError(tc.expErr)
+
+		err = s.Delete(ctx, tc.id)
 
 		if !reflect.DeepEqual(err, tc.expErr) {
 			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)

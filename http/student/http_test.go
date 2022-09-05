@@ -217,3 +217,71 @@ func TestGet(t *testing.T) {
 		}
 	}
 }
+
+func TestDelete(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := service.NewMockStudent(ctrl)
+	mock := New(mockService)
+
+	testcases := []struct {
+		desc      string
+		id        string
+		expErr    error
+		expStatus int
+	}{
+		{desc: "success:deleted successfully", id: "1", expStatus: http.StatusNoContent},
+		{desc: "failure:id is not present", id: "1111", expErr: errors.New("no rows present in db result set"),
+			expStatus: http.StatusBadRequest},
+	}
+
+	for i, tc := range testcases {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodDelete, "/student/{id}", nil)
+		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+
+		ID, err := strconv.Atoi(tc.id)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mockService.EXPECT().Delete(req.Context(), ID).Return(tc.expErr)
+
+		mock.Delete(w, req)
+
+		if w.Code != tc.expStatus {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expStatus, w.Code)
+		}
+	}
+}
+
+func TestDelete_StrConvErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := service.NewMockStudent(ctrl)
+	mock := New(mockService)
+
+	testcases := []struct {
+		desc      string
+		id        string
+		expErr    error
+		expStatus int
+	}{
+		{desc: "failure:invalid id will give strconv error", id: "abc", expErr: errors.New("strconv error "),
+			expStatus: http.StatusBadRequest},
+	}
+
+	for i, tc := range testcases {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodDelete, "/student/{id}", nil)
+		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+
+		mock.Delete(w, req)
+
+		if w.Code != tc.expStatus {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expStatus, w.Code)
+		}
+	}
+}

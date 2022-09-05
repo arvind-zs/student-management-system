@@ -77,6 +77,15 @@ func (s service) GetByID(ctx context.Context, id int) (models.Student, error) {
 	return student, nil
 }
 
+func (s service) Delete(ctx context.Context, id int) error {
+	_, err := s.student.GetByID(ctx, id)
+	if err != nil {
+		return errors.New("no sql rows present in db result set")
+	}
+
+	return s.student.Delete(ctx, id)
+}
+
 func isDuplicate(s1, s2 *models.Student) bool {
 	return s1.FirstName == s2.FirstName && s1.LastName == s2.LastName && s1.Gender == s2.Gender && s1.Dob ==
 		s2.Dob && s1.MotherTongue == s2.MotherTongue && s1.Nationality == s2.Nationality && s1.FatherName ==

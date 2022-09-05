@@ -184,3 +184,35 @@ func (h handler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h handler) Delete(w http.ResponseWriter, r *http.Request) {
+	ID, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	err = h.student.Delete(r.Context(), ID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

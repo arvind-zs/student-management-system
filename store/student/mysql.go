@@ -46,7 +46,7 @@ func (s store) Get(ctx context.Context) ([]models.Student, error) {
 func (s store) GetByID(ctx context.Context, id int) (models.Student, error) {
 	var student models.Student
 
-	query := "select * from " + string(models.TableName) + "where id = ?;"
+	query := "select * from " + string(models.TableName) + " where id = ?;"
 
 	err := s.db.QueryRowContext(ctx, query, id).Scan(&student.ID, &student.FirstName, &student.LastName, &student.Gender, &student.Dob, &student.MotherTongue,
 		&student.Nationality, &student.FatherName, &student.MotherName, &student.ContactNumber, &student.FatherOccupation,
@@ -61,7 +61,7 @@ func (s store) GetByID(ctx context.Context, id int) (models.Student, error) {
 func (s store) GetByFirstAndLastName(ctx context.Context, firstName, lastName string) ([]models.Student, error) {
 	var students []models.Student
 
-	query := "select * from" + string(models.TableName) + "where first_name = ? and last_name = ?;"
+	query := "select * from " + string(models.TableName) + " where first_name = ? and last_name = ?;"
 
 	rows, err := s.db.QueryContext(ctx, query, firstName, lastName)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s store) GetByFirstAndLastName(ctx context.Context, firstName, lastName st
 func (s store) GetByFirstName(ctx context.Context, firstName string) ([]models.Student, error) {
 	var students []models.Student
 
-	query := "select * from" + string(models.TableName) + "where first_name = ?;"
+	query := "select * from " + string(models.TableName) + " where first_name = ?;"
 
 	rows, err := s.db.QueryContext(ctx, query, firstName)
 	if err != nil {
@@ -117,7 +117,7 @@ func (s store) GetByFirstName(ctx context.Context, firstName string) ([]models.S
 func (s store) GetByLastName(ctx context.Context, lastName string) ([]models.Student, error) {
 	var students []models.Student
 
-	query := "select * from " + string(models.TableName) + "where last_name = ?;"
+	query := "select * from " + string(models.TableName) + " where last_name = ?;"
 
 	rows, err := s.db.QueryContext(ctx, query, lastName)
 	if err != nil {
@@ -143,7 +143,7 @@ func (s store) GetByLastName(ctx context.Context, lastName string) ([]models.Stu
 }
 
 func (s store) Post(ctx context.Context, student *models.Student) (models.Student, error) {
-	query := "insert into " + string(models.TableName) + "(first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
+	query := "insert into " + string(models.TableName) + " (first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
 		"father_occupation,mother_occupation,family_income) values (?,?,?,?,?,?,?,?,?,?,?,?);"
 
 	res, err := s.db.ExecContext(ctx, query, student.FirstName, student.LastName, student.Gender, student.Dob, student.MotherTongue,
@@ -162,4 +162,15 @@ func (s store) Post(ctx context.Context, student *models.Student) (models.Studen
 	student.ID = int(ID)
 
 	return *student, nil
+}
+
+func (s store) Delete(ctx context.Context, id int) error {
+	query := "delete from " + string(models.TableName) + " where id = ?;"
+
+	_, err := s.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

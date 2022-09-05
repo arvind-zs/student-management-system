@@ -7,6 +7,7 @@ import (
 )
 
 type Student interface {
+	Delete(ctx context.Context, id int) error
 	Get(ctx context.Context) ([]models.Student, error)
 	GetByID(ctx context.Context, id int) (models.Student, error)
 	GetByLastName(ctx context.Context, lastName string) ([]models.Student, error)

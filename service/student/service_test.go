@@ -515,3 +515,71 @@ func TestGet_MissingQueryParams(t *testing.T) {
 		}
 	}
 }
+
+func TestDelete(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		id        int
+		expGetRes models.Student
+		expGetErr error
+		expErr    error
+	}{
+		{desc: "success:deleted successfully", id: 1, expGetRes: models.Student{
+			ID: 1, FirstName: "arvind", Nationality: "Indian", ContactNumber: 7348761063,
+		}},
+		{desc: "failure:query error", id: 2, expGetRes: models.Student{
+			ID: 2, FirstName: "arvind", Nationality: "Indian", ContactNumber: 7348761063,
+		}, expErr: errors.New("query error")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+
+		mockStore.EXPECT().GetByID(ctx, tc.id).Return(tc.expGetRes, tc.expGetErr)
+		mockStore.EXPECT().Delete(ctx, tc.id).Return(tc.expErr)
+
+		err := mock.Delete(ctx, tc.id)
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestDelete_GetErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc      string
+		id        int
+		expGetRes models.Student
+		expGetErr error
+		expErr    error
+	}{
+		{desc: "failure:id not present in db result set", id: 1111,
+			expGetErr: errors.New("id is not present in db result set"),
+			expErr:    errors.New("no sql rows present in db result set")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+
+		mockStore.EXPECT().GetByID(ctx, tc.id).Return(tc.expGetRes, tc.expGetErr)
+
+		err := mock.Delete(ctx, tc.id)
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
