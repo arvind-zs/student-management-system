@@ -37,6 +37,46 @@ func (s service) Post(ctx context.Context, student *models.Student) (models.Stud
 	return s.student.Post(ctx, student)
 }
 
+func (s service) Get(ctx context.Context, firstName, lastName string) ([]models.Student, error) {
+	if firstName != "" && lastName != "" {
+		students, err := s.student.GetByFirstAndLastName(ctx, firstName, lastName)
+		if err != nil {
+			return nil, errors.New("no rows present in database with this query params")
+		}
+
+		return students, nil
+	}
+
+	if firstName != "" {
+		students, err := s.student.GetByFirstName(ctx, firstName)
+		if err != nil {
+			return nil, errors.New("no rows present in database with this query param")
+		}
+
+		return students, nil
+	}
+
+	if lastName != "" {
+		students, err := s.student.GetByLastName(ctx, lastName)
+		if err != nil {
+			return nil, errors.New("no rows present in database with this query param")
+		}
+
+		return students, nil
+	}
+
+	return nil, errors.New("invalid query params")
+}
+
+func (s service) GetByID(ctx context.Context, id int) (models.Student, error) {
+	student, err := s.student.GetByID(ctx, id)
+	if err != nil {
+		return models.Student{}, err
+	}
+
+	return student, nil
+}
+
 func isDuplicate(s1, s2 *models.Student) bool {
 	return s1.FirstName == s2.FirstName && s1.LastName == s2.LastName && s1.Gender == s2.Gender && s1.Dob ==
 		s2.Dob && s1.MotherTongue == s2.MotherTongue && s1.Nationality == s2.Nationality && s1.FatherName ==

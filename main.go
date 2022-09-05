@@ -28,6 +28,8 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/student", handlerStudent.Post).Methods(http.MethodPost)
+	r.HandleFunc("/student/{id}", handlerStudent.GetByID).Methods(http.MethodGet)
+	r.HandleFunc("/student", handlerStudent.Get).Methods(http.MethodGet)
 	fmt.Println("http server started and listening on port :9090")
 	log.Fatal(http.ListenAndServe(":9090", r))
 }
