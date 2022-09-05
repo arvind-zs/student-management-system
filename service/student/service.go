@@ -124,8 +124,8 @@ func checkMandatoryFields(value string) bool {
 		return false
 	}
 
-	for _, value := range value {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
+	for _, v := range value {
+		if !((v >= 65 && v <= 90) || (v >= 97 && v <= 122)) {
 			return false
 		}
 	}
@@ -134,8 +134,8 @@ func checkMandatoryFields(value string) bool {
 }
 
 func checkOptionalFields(value string) bool {
-	for _, value := range value {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
+	for _, v := range value {
+		if !((v >= 65 && v <= 90) || (v >= 97 && v <= 122)) {
 			return false
 		}
 	}
