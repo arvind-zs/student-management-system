@@ -85,7 +85,7 @@ func TestPost(t *testing.T) {
 	}
 }
 
-func TestGet_Err(t *testing.T) {
+func TestPost_GetErr(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

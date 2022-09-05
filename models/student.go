@@ -23,3 +23,9 @@ const (
 	Female Gender = "F"
 	Other  Gender = "O"
 )
+
+type DbTable string
+
+const (
+	TableName DbTable = "student"
+)

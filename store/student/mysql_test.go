@@ -40,7 +40,7 @@ func TestGet(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from student;").WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+		mock.ExpectQuery("select * from " + string(models.TableName) + ";").WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
 
@@ -92,7 +92,7 @@ func TestPost(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		query := "insert into student (first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
+		query := "insert into " + string(models.TableName) + "(first_name,last_name,gender,dob,mother_tongue,nationality,father_name,mother_name,contact_number," +
 			"father_occupation,mother_occupation,family_income) values (?,?,?,?,?,?,?,?,?,?,?,?);"
 		mock.ExpectExec(query).WithArgs(tc.reqData.FirstName, tc.reqData.LastName, tc.reqData.Gender, tc.reqData.Dob,
 			tc.reqData.MotherTongue, tc.reqData.Nationality, tc.reqData.FatherName, tc.reqData.MotherName, tc.reqData.ContactNumber,
@@ -143,7 +143,7 @@ func TestGetByFirstAndLastName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from student where first_name = ? and "+
+		mock.ExpectQuery("select * from"+string(models.TableName)+"where first_name = ? and "+
 			"last_name = ?;").WithArgs(tc.firstName, tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
@@ -189,7 +189,8 @@ func TestGetByFirstName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from student where first_name = ?;").WithArgs(tc.firstName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+		mock.ExpectQuery("select * from" + string(models.TableName) + "where " +
+			"first_name = ?;").WithArgs(tc.firstName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
 
@@ -234,7 +235,8 @@ func TestGetByLastName(t *testing.T) {
 			log.Println(err.Error())
 		}
 
-		mock.ExpectQuery("select * from student where last_name = ?;").WithArgs(tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+		mock.ExpectQuery("select * from " + string(models.TableName) + "where " +
+			"last_name = ?;").WithArgs(tc.lastName).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		s := New(db)
 
@@ -285,7 +287,7 @@ func TestGetByID(t *testing.T) {
 
 		s := New(db)
 
-		mock.ExpectQuery("select * from student where id = ?;").WithArgs(tc.id).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
+		mock.ExpectQuery("select * from " + string(models.TableName) + "where id = ?;").WithArgs(tc.id).WillReturnRows(tc.expRows).WillReturnError(tc.expErr)
 
 		result, err := s.GetByID(ctx, tc.id)
 

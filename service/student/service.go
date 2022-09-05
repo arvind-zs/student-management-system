@@ -86,27 +86,27 @@ func isDuplicate(s1, s2 *models.Student) bool {
 
 func isValidate(student *models.Student) error {
 	switch {
-	case !checkFirstName(student.FirstName):
+	case !checkMandatoryFields(student.FirstName):
 		return errors.New("invalid first name")
-	case student.LastName != "" && !checkLastName(student.LastName):
+	case student.LastName != "" && !checkOptionalFields(student.LastName):
 		return errors.New("invalid last name")
 	case student.Gender != "" && !checkGender(models.Gender(student.Gender)):
 		return errors.New("invalid gender")
 	case student.Dob != "" && !checkDob(student.Dob):
 		return errors.New("invalid dob")
-	case student.MotherTongue != "" && !checkMotherTongue(student.MotherTongue):
+	case student.MotherTongue != "" && !checkOptionalFields(student.MotherTongue):
 		return errors.New("invalid mother tongue")
-	case !checkNationality(student.Nationality):
+	case !checkMandatoryFields(student.Nationality):
 		return errors.New("invalid nationality")
-	case student.FatherName != "" && !checkFatherName(student.FatherName):
+	case student.FatherName != "" && !checkOptionalFields(student.FatherName):
 		return errors.New("invalid father name")
-	case student.MotherName != "" && !checkMotherName(student.MotherName):
+	case student.MotherName != "" && !checkOptionalFields(student.MotherName):
 		return errors.New("invalid mother name")
 	case !checkContactNumber(student.ContactNumber):
 		return errors.New("invalid contact number")
-	case student.FatherOccupation != "" && !checkFatherOccupation(student.FatherOccupation):
+	case student.FatherOccupation != "" && !checkOptionalFields(student.FatherOccupation):
 		return errors.New("invalid father occupation")
-	case student.MotherOccupation != "" && !checkMotherOccupation(student.MotherOccupation):
+	case student.MotherOccupation != "" && !checkOptionalFields(student.MotherOccupation):
 		return errors.New("invalid mother occupation")
 	case student.FamilyIncome != 0 && !checkFamilyIncome(student.FamilyIncome):
 		return errors.New("invalid family income")
@@ -119,12 +119,12 @@ func checkGender(gender models.Gender) bool {
 	return gender == models.Male || gender == models.Female || gender == models.Other
 }
 
-func checkFirstName(firstName string) bool {
-	if firstName == "" {
+func checkMandatoryFields(value string) bool {
+	if value == "" {
 		return false
 	}
 
-	for _, value := range firstName {
+	for _, value := range value {
 		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
 			return false
 		}
@@ -133,22 +133,8 @@ func checkFirstName(firstName string) bool {
 	return true
 }
 
-func checkNationality(nationality string) bool {
-	if nationality == "" {
-		return false
-	}
-
-	for _, value := range nationality {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkLastName(lastName string) bool {
-	for _, value := range lastName {
+func checkOptionalFields(value string) bool {
+	for _, value := range value {
 		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
 			return false
 		}
@@ -191,56 +177,6 @@ func checkDob(dob string) bool {
 		}
 
 		return false
-	}
-
-	return true
-}
-
-func checkMotherTongue(motherTongue string) bool {
-	for _, value := range motherTongue {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkFatherName(fatherName string) bool {
-	for _, value := range fatherName {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkMotherName(motherName string) bool {
-	for _, value := range motherName {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkFatherOccupation(fatherOccupation string) bool {
-	for _, value := range fatherOccupation {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkMotherOccupation(motherOccupation string) bool {
-	for _, value := range motherOccupation {
-		if !((value >= 65 && value <= 90) || (value >= 97 && value <= 122)) {
-			return false
-		}
 	}
 
 	return true
