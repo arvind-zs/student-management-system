@@ -93,3 +93,18 @@ func (mr *MockStudentMockRecorder) Post(ctx, student interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Post", reflect.TypeOf((*MockStudent)(nil).Post), ctx, student)
 }
+
+// Put mocks base method.
+func (m *MockStudent) Put(ctx context.Context, id int, student *models.Student) (models.Student, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Put", ctx, id, student)
+	ret0, _ := ret[0].(models.Student)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Put indicates an expected call of Put.
+func (mr *MockStudentMockRecorder) Put(ctx, id, student interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Put", reflect.TypeOf((*MockStudent)(nil).Put), ctx, id, student)
+}

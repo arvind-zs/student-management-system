@@ -37,6 +37,19 @@ func (s service) Post(ctx context.Context, student *models.Student) (models.Stud
 	return s.student.Post(ctx, student)
 }
 
+func (s service) Put(ctx context.Context, id int, student *models.Student) (models.Student, error) {
+	if err := isValidate(student); err != nil {
+		return models.Student{}, err
+	}
+
+	_, err := s.student.GetByID(ctx, id)
+	if err != nil {
+		return models.Student{}, err
+	}
+
+	return s.student.Put(ctx, id, student)
+}
+
 func (s service) Get(ctx context.Context, firstName, lastName string) ([]models.Student, error) {
 	if firstName != "" && lastName != "" {
 		students, err := s.student.GetByFirstAndLastName(ctx, firstName, lastName)

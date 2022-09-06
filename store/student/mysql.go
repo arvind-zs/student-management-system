@@ -164,6 +164,20 @@ func (s store) Post(ctx context.Context, student *models.Student) (models.Studen
 	return *student, nil
 }
 
+func (s store) Put(ctx context.Context, id int, student *models.Student) (models.Student, error) {
+	query := "update " + string(models.TableName) + " set first_name = ?,last_name = ?,gender = ?,dob = ?,mother_tongue = ?,nationality = ?," +
+		"father_name = ?,mother_name = ?,contact_number = ?,father_occupation = ?,mother_occupation = ?,family_income = ? where id = ?;"
+
+	_, err := s.db.ExecContext(ctx, query, student.FirstName, student.LastName, student.Gender, student.Dob, student.MotherTongue,
+		student.Nationality, student.FatherName, student.MotherName, student.ContactNumber, student.FatherOccupation, student.MotherOccupation,
+		student.FamilyIncome, id)
+	if err != nil {
+		return models.Student{}, err
+	}
+
+	return *student, nil
+}
+
 func (s store) Delete(ctx context.Context, id int) error {
 	query := "delete from " + string(models.TableName) + " where id = ?;"
 

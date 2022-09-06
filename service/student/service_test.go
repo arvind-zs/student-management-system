@@ -583,3 +583,323 @@ func TestDelete_GetErr(t *testing.T) {
 		}
 	}
 }
+
+func TestPut(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc          string
+		id            int
+		reqData       models.Student
+		expRes        models.Student
+		expGetByIDRes models.Student
+		expGetByIDErr error
+		expErr        error
+	}{
+		{desc: "success:valid details updated successfully", id: 1, reqData: models.Student{
+			FirstName:        "arvind",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "09-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}, expRes: models.Student{
+			ID:               1,
+			FirstName:        "arvind",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "09-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}, expGetByIDRes: models.Student{
+			FirstName:        "anuj",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "09-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}},
+		{desc: "failure:put  method return query error", reqData: models.Student{
+			FirstName:        "arvind",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "10-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}, expGetByIDRes: models.Student{
+			FirstName:        "arvind",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "09-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}, expErr: errors.New("query error")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByID(ctx, tc.id).Return(tc.expGetByIDRes, tc.expGetByIDErr)
+		mockStore.EXPECT().Put(ctx, tc.id, &tc.reqData).Return(tc.expRes, tc.expErr)
+
+		res, err := mock.Put(ctx, tc.id, &tc.reqData)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestPut_GetByIDErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc          string
+		id            int
+		reqData       models.Student
+		expGetByIDRes models.Student
+		expRes        models.Student
+		expGetByIDErr error
+		expErr        error
+	}{
+		{desc: "failure:id is not present in db result set", id: 1111, reqData: models.Student{
+			FirstName:        "arvind",
+			LastName:         "yadav",
+			Gender:           "M",
+			Dob:              "10-10-2000",
+			MotherTongue:     "Hindi",
+			Nationality:      "indian",
+			FatherName:       "Kailash",
+			MotherName:       "Indrawati",
+			ContactNumber:    7348761063,
+			FatherOccupation: "agriculture",
+			MotherOccupation: "housewife",
+		}, expGetByIDErr: errors.New("query error"), expErr: errors.New("query error")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		mockStore.EXPECT().GetByID(ctx, tc.id).Return(tc.expGetByIDRes, tc.expGetByIDErr)
+
+		res, err := mock.Put(ctx, tc.id, &tc.reqData)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestPut_BodyCheckErr1(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc    string
+		id      int
+		reqData models.Student
+		expRes  models.Student
+		expErr  error
+	}{
+		{desc: "failure:invalid first name", id: 1, reqData: models.Student{
+			FirstName:     "a12",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid first name")},
+		{desc: "failure:invalid first name", id: 1, reqData: models.Student{
+			FirstName:     "",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid first name")},
+		{desc: "failure:invalid last name", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			LastName:      "ya12",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid last name")},
+		{desc: "failure:invalid dob", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "04-31-2008",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob ..strconv error", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "ab-31-2008",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob ..strconv error", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "04-ab-2008",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob ..strconv error", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "04-30-abc",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob.. month is not correct", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "13-30-2000",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob.. date is not correct", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "12-32-2000",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+		{desc: "failure:invalid dob.. year is not correct", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Dob:           "3-24-999",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid dob")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		res, err := mock.Put(ctx, tc.id, &tc.reqData)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}
+
+func TestPut_BodyCheckErr2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockStore := store.NewMockStudent(ctrl)
+	mock := New(mockStore)
+
+	testcases := []struct {
+		desc    string
+		id      int
+		reqData models.Student
+		expRes  models.Student
+		expErr  error
+	}{
+		{desc: "failure:invalid gender", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Gender:        "K",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid gender")},
+		{desc: "failure:invalid mother tongue", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			MotherTongue:  "a12",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid mother tongue")},
+		{desc: "failure:invalid nationality", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "India123",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid nationality")},
+		{desc: "failure:invalid nationality", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid nationality")},
+		{desc: "failure:invalid father name", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			FatherName:    "123",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid father name")},
+		{desc: "failure:invalid mother name", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			MotherName:    "123",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid mother name")},
+		{desc: "failure:invalid contact number", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 734876106,
+		}, expErr: errors.New("invalid contact number")},
+		{desc: "failure:invalid father occupation", id: 1, reqData: models.Student{
+			FirstName:        "arvind",
+			FatherOccupation: "a12",
+			Nationality:      "Indian",
+			ContactNumber:    7348761063,
+		}, expErr: errors.New("invalid father occupation")},
+		{desc: "failure:invalid mother occupation", id: 1, reqData: models.Student{
+			FirstName:        "arvind",
+			MotherOccupation: "a12",
+			Nationality:      "Indian",
+			ContactNumber:    7348761063,
+		}, expErr: errors.New("invalid mother occupation")},
+		{desc: "failure:invalid family income", id: 1, reqData: models.Student{
+			FirstName:     "arvind",
+			FamilyIncome:  -123,
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid family income")},
+	}
+
+	for i, tc := range testcases {
+		ctx := context.Background()
+		res, err := mock.Put(ctx, tc.id, &tc.reqData)
+
+		if !reflect.DeepEqual(tc.expRes, res) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, res)
+		}
+
+		if !reflect.DeepEqual(tc.expErr, err) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}

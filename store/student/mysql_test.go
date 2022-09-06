@@ -331,3 +331,55 @@ func TestDelete(t *testing.T) {
 		}
 	}
 }
+
+func TestPut(t *testing.T) {
+	testcases := []struct {
+		desc           string
+		id             int
+		reqBody        models.Student
+		noOfRowsAffect int64
+		expRes         models.Student
+		expErr         error
+	}{
+		{desc: "success:updated successfully", id: 1, reqBody: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, noOfRowsAffect: 1, expRes: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}},
+		{desc: "failure:invalid id", id: 1111, reqBody: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("sql:no rows in db result set")},
+	}
+
+	for i, tc := range testcases {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		ctx := context.TODO()
+		s := New(db)
+
+		mock.ExpectExec("update "+string(models.TableName)+" set first_name = ?,last_name = ?,gender = ?,dob = ?,mother_tongue = ?,nationality = ?,"+
+			"father_name = ?,mother_name = ?,contact_number = ?,father_occupation = ?,mother_occupation = ?,family_income = ? where id = ?;").WithArgs(tc.reqBody.FirstName,
+			tc.reqBody.LastName, tc.reqBody.Gender, tc.reqBody.Dob, tc.reqBody.MotherTongue, tc.reqBody.Nationality, tc.reqBody.FatherName, tc.reqBody.MotherName,
+			tc.reqBody.ContactNumber, tc.reqBody.FatherOccupation, tc.reqBody.MotherOccupation, tc.reqBody.FamilyIncome, tc.id).WillReturnResult(
+			sqlmock.NewResult(0, tc.noOfRowsAffect)).WillReturnError(tc.expErr)
+
+		result, err := s.Put(ctx, tc.id, &tc.reqBody)
+
+		if !reflect.DeepEqual(result, tc.expRes) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expRes, result)
+		}
+
+		if !reflect.DeepEqual(err, tc.expErr) {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expErr, err)
+		}
+	}
+}

@@ -99,6 +99,137 @@ func TestPost_UnmarshallingError(t *testing.T) {
 	}
 }
 
+func TestPut(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := service.NewMockStudent(ctrl)
+	mock := New(mockService)
+
+	testcases := []struct {
+		desc      string
+		id        string
+		reqBody   models.Student
+		expRes    models.Student
+		expErr    error
+		expStatus int
+	}{
+		{desc: "success:valid details updated successfully", id: "1", reqBody: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expRes: models.Student{
+			ID:            1,
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expStatus: http.StatusOK},
+		{desc: "failure:invalid details  ", id: "3", reqBody: models.Student{
+			FirstName:     "",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("invalid first name"), expStatus: http.StatusBadRequest},
+	}
+
+	for i, tc := range testcases {
+		body, err := json.Marshal(tc.reqBody)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/student/{id}", bytes.NewReader(body))
+		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+
+		ID, err := strconv.Atoi(tc.id)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		mockService.EXPECT().Put(req.Context(), ID, &tc.reqBody).Return(tc.expRes, tc.expErr)
+		mock.Put(w, req)
+
+		if w.Code != tc.expStatus {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expStatus, w.Code)
+		}
+	}
+}
+
+func TestPut_UnmarshallingError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := service.NewMockStudent(ctrl)
+	mock := New(mockService)
+
+	testcases := []struct {
+		desc      string
+		id        string
+		reqBody   []byte
+		expRes    models.Student
+		expErr    error
+		expStatus int
+	}{
+		{desc: "failure:unmarshalling error", id: "1", reqBody: []byte(`{
+			FirstName:     arvind,
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}`), expErr: errors.New("invalid body"), expStatus: http.StatusBadRequest},
+	}
+
+	for i, tc := range testcases {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/student/{id}", bytes.NewReader(tc.reqBody))
+		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+
+		mock.Put(w, req)
+
+		if w.Code != tc.expStatus {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expStatus, w.Code)
+		}
+	}
+}
+
+func TestPut_StrConvErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := service.NewMockStudent(ctrl)
+	mock := New(mockService)
+
+	testcases := []struct {
+		desc      string
+		id        string
+		reqBody   models.Student
+		expRes    models.Student
+		expErr    error
+		expStatus int
+	}{
+		{desc: "failure:invalid id will give strconv error", id: "abc", reqBody: models.Student{
+			FirstName:     "arvind",
+			Nationality:   "Indian",
+			ContactNumber: 7348761063,
+		}, expErr: errors.New("strconv error "), expStatus: http.StatusBadRequest},
+	}
+
+	for i, tc := range testcases {
+		body, err := json.Marshal(tc.reqBody)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/student/{id}", bytes.NewReader(body))
+		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+
+		mock.Put(w, req)
+
+		if w.Code != tc.expStatus {
+			t.Errorf("testcases %d failed expected %v got %v", i+1, tc.expStatus, w.Code)
+		}
+	}
+}
+
 func TestGetByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

@@ -216,3 +216,88 @@ func (h handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h handler) Put(w http.ResponseWriter, r *http.Request) {
+	ID, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	var student models.Student
+
+	err = json.Unmarshal(body, &student)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	student, err = h.student.Put(r.Context(), ID, &student)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	student.ID = ID
+
+	body, err = json.Marshal(student)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.Println(err.Error())
+
+			return
+		}
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(body)
+	if err != nil {
+		log.Println(err.Error())
+
+		return
+	}
+}

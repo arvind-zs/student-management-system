@@ -31,6 +31,7 @@ func main() {
 	r.HandleFunc("/student/{id}", handlerStudent.GetByID).Methods(http.MethodGet)
 	r.HandleFunc("/student", handlerStudent.Get).Methods(http.MethodGet)
 	r.HandleFunc("/student/{id}", handlerStudent.Delete).Methods(http.MethodDelete)
+	r.HandleFunc("/student/{id}", handlerStudent.Put).Methods(http.MethodPut)
 
 	fmt.Println("http server started and listening on port :9090")
 	log.Fatal(http.ListenAndServe(":9090", r))
