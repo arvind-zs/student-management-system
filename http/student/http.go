@@ -24,14 +24,7 @@ func New(s service.Student) handler {
 func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
@@ -40,42 +33,21 @@ func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &student)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	student, err = h.student.Post(r.Context(), &student)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	body, err = json.Marshal(student)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleInternalServerError(w, err)
 
 		return
 	}
@@ -96,28 +68,14 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.student.Get(r.Context(), firstName, lastName)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	body, err := json.Marshal(res)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleInternalServerError(w, err)
 
 		return
 	}
@@ -135,42 +93,21 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 func (h handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	student, err := h.student.GetByID(r.Context(), ID)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	body, err := json.Marshal(student)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleInternalServerError(w, err)
 
 		return
 	}
@@ -188,28 +125,14 @@ func (h handler) GetByID(w http.ResponseWriter, r *http.Request) {
 func (h handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	err = h.student.Delete(r.Context(), ID)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
@@ -220,28 +143,14 @@ func (h handler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h handler) Put(w http.ResponseWriter, r *http.Request) {
 	ID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
@@ -250,28 +159,14 @@ func (h handler) Put(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &student)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
 
 	student, err = h.student.Put(r.Context(), ID, &student)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleBadRequestError(w, err)
 
 		return
 	}
@@ -280,14 +175,7 @@ func (h handler) Put(w http.ResponseWriter, r *http.Request) {
 
 	body, err = json.Marshal(student)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-
-		_, err = w.Write([]byte(err.Error()))
-		if err != nil {
-			log.Println(err.Error())
-
-			return
-		}
+		handleInternalServerError(w, err)
 
 		return
 	}
@@ -300,4 +188,30 @@ func (h handler) Put(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+}
+
+func handleBadRequestError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusBadRequest)
+
+	_, err = w.Write([]byte(err.Error()))
+	if err != nil {
+		log.Println(err.Error())
+
+		return
+	}
+
+	return
+}
+
+func handleInternalServerError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+
+	_, err = w.Write([]byte(err.Error()))
+	if err != nil {
+		log.Println(err.Error())
+
+		return
+	}
+
+	return
 }
